@@ -23,7 +23,7 @@ def login_view(request):
         print('user:', user)
         if user:
             login(request, user)
-            return redirect('index')
+            return redirect('posts:post-list')
         else:
             return redirect('members:login')
     return render(request, 'members/login.html')
