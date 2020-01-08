@@ -1,29 +1,50 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <div>User: {{ request.user }}</div>
+    <div>Authenticated: {{ request.user.is_authenticated }}</div>
+    <div>
+    <a href="{% url 'members:logout' %}">로그아웃</a>
+    </div>
     {% for post in posts %}
         <div>{{ post.author }}</div>
         <div>{{ post.created }}</div>
+        <!--
+            post_like에 POST요청을 보내는 Form구현
+            - input을 갖지 않음
+            - csrf_token만 추가 {# {% url %} #}
+            - 보내는 곳(action)에, url 태그를 적절히 활용
+              ex) /posts/1/like/
+                  /posts/2/like/
+              Post의 pk에 따라 위와 같은 URL을 동적으로 생성해야 함
+        -->
+{#        <form action="/posts/{{ post.pk }}/like/" method="POST">#}
+        <form action="{% url 'posts:post-like' pk=post.pk %}" method="POST">
+            {% csrf_token %}
+
+            <!--
+            사용가능한 변수
+            - user (User)
+            - post (Post)
+            Template에서의 메서드 콜
+             post.like_users.all() -> post.like_users.all
+              호출구문()을 제외해야 합니다
+            in operator
+            <변수> in <반복가능개체(QuerySet등)>
+            -> True/False를 반환
+            user와 post.like_users을 적절히 이용해서
+            현재 request.user가 이 Post의 like_users에 포함되는지를 검사해서
+            아래의 if/else/endif구문이 동작하도록 작성해본다
+            user.like_post_set를 이용해서 아래 조건문이 동작하도록 해본다
+            -->
+            {# {% if user in post.like_users.all %} #}
+            {% if post in user.like_post_set.all %}
+                <div>좋아요 눌린 상태</div>
+            {% else %}
+                <div>좋아요 안 눌린 상태</div>
+            {% endif %}
+            <button type="submit">좋아요</button>
+        </form>
+        <hr>
     {% endfor %}
-
-
-
-
-    <div class="container-fluid">
-        <div class="card" style="border-radius: 1px;">
-            <div class="card-header p-3">lhy</div>
-            <div class="card-body p-3">
-                <div class="btn-container">
-                    <button class="btn btn-sm btn-outline-primary">Like</button>
-                    <button class="btn btn-sm btn-outline-primary">Comment</button>
-                </div>
-
-                <div>lhy님 외 35명이 좋아합니다</div>
-                <ul class="comment-list">
-                    <li>lhy 장고너무좋아요</li>
-                    <li>pjh 진짜그렇네요!</li>
-                </ul>
-            </div>
-        </div>
-    </div>
 {% endblock %}
