@@ -76,13 +76,14 @@ def post_create(request):
     if request.method == 'POST':
 
         text = request.POST['text']
-        image = request.FILES['img']
+        images = request.FILES.getlist['img']
 
         post = Post.objects.create(
             author=request.user,
             content=text
         )
-        post.postimage_set.create(image=image)
+        for image in images:
+            post.postimage_set.create(image=image)
         # post_image = PostImage.objects.create(
         #     post=post,
         #     image=image,
