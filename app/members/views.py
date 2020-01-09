@@ -1,5 +1,11 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
+# 장고 기본유저나 Custom유저모델 중, 사용중인 User모델을 가져옴
+from members.forms import LoginForm
+
+User = get_user_model()
 
 
 def login_view(request):
@@ -26,7 +32,12 @@ def login_view(request):
             return redirect('posts:post-list')
         else:
             return redirect('members:login')
-    return render(request, 'members/login.html')
+
+    form = LoginForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'members/login.html', context)
 
 
 def signup_view(request):
@@ -34,6 +45,7 @@ def signup_view(request):
     Template: index.html을 그대로 사용
         action만 이쪽으로
     URL: /members/signup/
+    Form: members.forms.SignupForm
     User에 name필드를 추가
         email
         username
@@ -57,26 +69,23 @@ def signup_view(request):
     if User.objects.filter(email=email).exists():
         return HttpResponse('이미 사용중인 email입니다')
 
-
     user = User.objects.create_user(
+        password=password,
         username=username,
         email=email,
         name=name,
-        password=password,
     )
     login(request, user)
     return redirect('posts:post-list')
 
+
 def logout_view(request):
-
     """
-    GET 요청으로 처리함
-    요청에 있는 사용자를 logout 처리
-    django.contrib.auth.logout 함수를 사용한다
-
+    GET요청으로 처리함
+    요청에 있는 사용자를 logout처리
+    django.contrib.auth.logout함수를 사용한다
     URL: /members/logout/
     Template: 없음
-
     :param request:
     :return:
     """
