@@ -16,10 +16,20 @@
                 <h1>Instagram</h1>
                 <form action="" method="POST">
                     {% csrf_token %}
+                    <!-- form이 가진 field들을 순회하며, 매 순회마다 .form-group요소를 만듬 -->
                     {% for field in form %}
-                        {{ field }}
+                        <div class="form-group">
+                            {{ field }}
+                        </div>
                     {% endfor %}
 
+                    {% if form.non_field_errors %}
+                        <ul class="list-unstyled text-danger">
+                            {% for error in form.non_field_errors %}
+                                <li>{{ error|escape }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                     <button class="btn btn-primary btn-block">로그인</button>
                 </form>
                 <hr>
@@ -29,7 +39,7 @@
 
             <div class="card text-center p-4 mt-3 mb-3">
                 <span>계정이 없으신가요?</span>
-                <a href="{% url 'index' %}">가입하기</a>
+                <a href="{% url 'signup' %}">가입하기</a>
             </div>
         </div>
     </div>
