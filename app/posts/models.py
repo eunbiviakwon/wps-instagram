@@ -1,4 +1,5 @@
 import re
+
 from django.db import models
 
 from members.models import User
@@ -11,6 +12,7 @@ class Post(models.Model):
     """
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField(blank=True)
+    content_html = models.TextField(blank=True)
     like_users = models.ManyToManyField(
         User, through='PostLike', related_name='like_post_set',
     )
@@ -25,16 +27,30 @@ class Post(models.Model):
             created=self.created,
         )
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    def _save_html(self):
+        """
+        content속성의 값을 사용해서 해시태그에 해당하는 문자열을 a태그로 바꾸어 줌
+        :return: 해시태그가 a태그로 변환된 HTML
+        """
+        self.content_html = re.sub(
+            self.TAG_PATTERN,
+            r'<a href="/explore/tags/\g<1>/">#\g<1></a>',
+            self.content,
+        )
+
+    def _save_tags(self):
+        """
+        content에 포함된 해시태그 문자열 (ex: #Python)의 Tag들을 만들고,
+        자신의 tags Many-to-many field에 추가한다
+        """
         tag_name_list = re.findall(self.TAG_PATTERN, self.content)
         tags = [Tag.objects.get_or_create(name=tag_name)[0] for tag_name in tag_name_list]
         self.tags.set(tags)
-        # Post객체가 저장될 때, context 값을 분석해서
-        # 자신의 tags 항목을 적절히 채워줌
-        # ex) #Django, #Python이 온 경우
-        # post.tags.all()시
-        # name이 Django, Python인 Tag 2개 QuerySet이 리턴되어야 함
+
+    def save(self, *args, **kwargs):
+        self._save_html()
+        super().save(*args, **kwargs)
+        self._save_tags()
 
 
 class PostImage(models.Model):
@@ -61,14 +77,12 @@ class PostLike(models.Model):
 
 class Tag(models.Model):
     """
-    Many-to-many에서 필드는 Post의 클래스에 작성
+    Many-to-many에서, 필드는 Post에 클래스에 작성
     HashTag의 Tag를 담당
-    Post 입장에서 post.tags.all()로 연결된 전체 Tag를 불러올 수 있어야 함
+    Post입장에서 post.tags.all()로 연결된 전체 Tag를 불러올 수 있어야 함
     Tag 입장에서 tag.posts.all()로 연결된 전체 Post를 불러올 수 있어야 함
-
     Django admin에서 결과를 볼 수 있도록 admin.py에 적절히 내용 기록
-
-    중계모델(Intermediate model)을 사용할 필요 없음
+    중개모델(Intermediate model)을 사용할 필요 없음
     """
     name = models.CharField('태그명', max_length=100)
 
