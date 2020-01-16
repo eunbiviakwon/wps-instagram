@@ -27,6 +27,18 @@ def post_list(request):
     }
     return render(request, 'posts/post-list.html', context)
 
+def post_list_by_tag(request, tag):
+    # URL: /explore/tags/<tag문자열>/
+    # Template: /posts/post-list.html
+    # <tag문자열>인 Tag를 자신(post).tags에 가지고 있는 경우인 Post목록만 돌려줘야 함
+    # 이 내용 외에는 위의 post_list와 동일
+    posts = Post.objects.filter(tags__name__iexact=tag).order_by('-pk')
+    comment_form = CommentCreateForm()
+    context = {
+        'posts': posts,
+        'comment_form': comment_form,
+    }
+    return render(request, 'posts/post-list.html', context)
 
 def post_like(request, pk):
     """
