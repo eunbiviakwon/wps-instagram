@@ -42,6 +42,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '172.16.1.116',
+    '54.180.159.197',
 ]
 AUTH_USER_MODEL = 'members.User'
 
@@ -100,8 +101,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'instagram',
+        'USER': 'eunbi',
+        'PASSWORD': 'rnjsdmsql',
+        'HOST':'wps-keb0622.czlgxi7fkcf2.ap-northeast-2.rds.amazonaws.com',
+        'PORT': 5432,
     }
 }
 
@@ -128,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'ko-kr'
+LANGUAGE_CODE = 'ko'
 
 TIME_ZONE = 'Asia/Seoul'
 

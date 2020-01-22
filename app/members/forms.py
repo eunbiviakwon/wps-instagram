@@ -50,14 +50,7 @@ class SignupForm(forms.Form):
             }
         )
     )
-    name = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': '이름',
-            }
-        )
-    )
+
     username = forms.CharField(
         widget=forms.TextInput(
             attrs={
@@ -96,5 +89,4 @@ class SignupForm(forms.Form):
             username=self.cleaned_data['username'],
             email=self.cleaned_data['email'],
             password=self.cleaned_data['password'],
-            name=self.cleaned_data['name'],
         )
