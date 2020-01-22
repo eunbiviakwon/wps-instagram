@@ -28,6 +28,14 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 MEDIA_URL = '/media/'
 
+# django-storages
+# django의 FileStorage로 S3Boto3Storage(AWS의 S#)를 사용
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = ''
+AWS_SECRET_ACCESS_KEY = ''
+AWS_STORAGE_BUCKET_NAME = 'wps-instagram-keb2'
+AWS_S3_REGION_NAME = 'ap-northeast-2'
+AWS_AUTO_CREATE_BUCKET = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/

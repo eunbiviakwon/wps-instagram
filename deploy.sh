@@ -7,7 +7,7 @@ SSH_CMD="ssh -i ${IDENTITY_FILE} ${HOST}"
 
 # pip freeze
 echo "pip freeze"
-"$HOME"/.pyenv/versions/3.7.5/bin/pip freeze > "$HOME"/projects/instagram/requirements.txt
+"$HOME"/.pyenv/versions/3.7.5/envs/wps-instagram-env/bin/pip freeze > "$HOME"/projects/instagram/requirements.txt
 
 # 기존 폴더 삭제
 echo "기존 폴더 삭제"
